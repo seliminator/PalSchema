@@ -1,5 +1,5 @@
 # PalSchema
-PalSchema is a mod that allows modifying of Data Tables in Palworld with json files. As the name suggests, I've also made heavy use of json schema, so mod creators can have autocompletion and error checking to make creation of table mods easier.
+PalSchema is a mod that allows modifying of data tables in Palworld with json files without introducing conflicts with other mods that modify the same data table. As the name suggests, I've also made heavy use of json schema, so mod creators can have autocompletion and error checking to make creation of table mods easier.
 
 # Installation
 1. First, you need to download this specific experimental version of [UE4SS](https://github.com/UE4SS-RE/RE-UE4SS/releases/download/experimental/UE4SS_v3.0.1-253-g154f502.zip). It might work on the latest experimental version, but just to avoid compatibility issues, get the one linked here.
