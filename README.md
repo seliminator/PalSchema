@@ -9,3 +9,7 @@ PalSchema is a mod that allows modifying of data tables in Palworld with json fi
 3. After you're done downloading PalSchema, you'll want to move the PalSchema folder inside of the zip to the Mods folder in either Pal/Binaries/Win64/ue4ss (Steam) or Pal/Binaries/WinGDK/ue4ss (Game Pass).
 
 4. Done! Any mods created for PalSchema go inside the PalSchema/mods folder.
+
+# Documentation
+
+Documentation for modders can be found [here](https://okaetsu.github.io/PalSchema/docs/gettingstarted)
