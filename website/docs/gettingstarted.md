@@ -123,7 +123,7 @@ I'll explain the above structure:
   - 3 = Epic
   - 4 = Legendary
 
-- Price requires some manual calculation as it doesn't reflect the final value.
+- Price requires some manual calculation as it doesn't reflect the final value. You can get the final price by dividing the price by 10, so in our case 9999 / 10 = 999 gold in-game.
 
 - MaxStackCount is self explanatory. Just don't go over 9999 due to duplication issue present in the Vanilla game.
 
