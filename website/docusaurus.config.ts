@@ -13,12 +13,12 @@ const config: Config = {
   url: 'https://okaetsu.github.io',
   // Set the /<baseUrl>/ pathname under which your site is served
   // For GitHub pages deployment, it is often '/<projectName>/'
-  baseUrl: '/',
+  baseUrl: '/PalSchema/',
 
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
   organizationName: 'okaetsu', // Usually your GitHub org/user name.
-  projectName: 'okaetsu.github.io', // Usually your repo name.
+  projectName: 'PalSchema', // Usually your repo name.
 
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
