@@ -65,7 +65,7 @@ namespace Palworld {
 	void PalMonsterModLoader::Add(const RC::Unreal::FName& CharacterId, const nlohmann::json& properties)
 	{
 		auto MonsterRowStruct = m_dataTable->GetRowStruct().UnderlyingObjectPointer;
-		uint8_t* MonsterRowData = (uint8_t*)FMemory::Malloc(MonsterRowStruct->GetStructureSize());
+		auto MonsterRowData = FMemory::Malloc(MonsterRowStruct->GetStructureSize());
 		MonsterRowStruct->InitializeStruct(MonsterRowData);
 
 		for (auto& [key, value] : properties.items())
@@ -187,7 +187,7 @@ namespace Palworld {
 
 			auto Level = value.at("Level").get<int>();
 
-			uint8_t* WazaMasterLevelData = (uint8_t*)FMemory::Malloc(RowStruct->GetStructureSize());
+			auto WazaMasterLevelData = FMemory::Malloc(RowStruct->GetStructureSize());
 			RowStruct->InitializeStruct(WazaMasterLevelData);
 
 			auto PalIDProperty = RowStruct->GetPropertyByName(STR("PalID"));
@@ -219,7 +219,7 @@ namespace Palworld {
 	{
 		auto RowStruct = m_palDropItemTable->GetRowStruct().UnderlyingObjectPointer;
 
-		uint8_t* PalDropItemData = (uint8_t*)FMemory::Malloc(RowStruct->GetStructureSize());
+		auto PalDropItemData = FMemory::Malloc(RowStruct->GetStructureSize());
 		RowStruct->InitializeStruct(PalDropItemData);
 
 		auto CharacterIdProperty = RowStruct->GetPropertyByName(STR("CharacterId"));
@@ -344,7 +344,7 @@ namespace Palworld {
 			auto TextProperty = TranslationRowStruct->GetPropertyByName(STR("TextData"));
 			if (TextProperty)
 			{
-				uint8_t* TranslationRowData = (uint8_t*)FMemory::Malloc(TranslationRowStruct->GetStructureSize());
+				auto TranslationRowData = FMemory::Malloc(TranslationRowStruct->GetStructureSize());
 				TranslationRowStruct->InitializeStruct(TranslationRowData);
 
 				try
@@ -368,7 +368,7 @@ namespace Palworld {
 			auto TextProperty = TranslationRowStruct->GetPropertyByName(STR("TextData"));
 			if (TextProperty)
 			{
-				uint8_t* TranslationRowData = (uint8_t*)FMemory::Malloc(TranslationRowStruct->GetStructureSize());
+				auto TranslationRowData = FMemory::Malloc(TranslationRowStruct->GetStructureSize());
 				TranslationRowStruct->InitializeStruct(TranslationRowData);
 
 				try
@@ -392,7 +392,7 @@ namespace Palworld {
 			auto TextProperty = TranslationRowStruct->GetPropertyByName(STR("TextData"));
 			if (TextProperty)
 			{
-				uint8_t* TranslationRowData = (uint8_t*)FMemory::Malloc(TranslationRowStruct->GetStructureSize());
+				auto TranslationRowData = FMemory::Malloc(TranslationRowStruct->GetStructureSize());
 				TranslationRowStruct->InitializeStruct(TranslationRowData);
 
 				try

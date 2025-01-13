@@ -70,7 +70,7 @@ namespace Palworld {
 		}
 
 		auto MasterBuildingRowStruct = m_mapObjectMasterDataTable->GetRowStruct().UnderlyingObjectPointer;
-		uint8_t* MasterBuildingRowData = (uint8_t*)FMemory::Malloc(MasterBuildingRowStruct->GetStructureSize());
+		auto MasterBuildingRowData = FMemory::Malloc(MasterBuildingRowStruct->GetStructureSize());
 		MasterBuildingRowStruct->InitializeStruct(MasterBuildingRowData);
 
 		try

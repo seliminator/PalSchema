@@ -117,7 +117,7 @@ namespace Palworld {
 			}
 		}
 
-		uint8_t* RowData = (uint8_t*)FMemory::Malloc(RowStruct->GetStructureSize());
+		auto RowData = FMemory::Malloc(RowStruct->GetStructureSize());
 		RowStruct->InitializeStruct(RowData);
 
 		for (auto& Property : RowStruct->ForEachProperty())
@@ -235,7 +235,7 @@ namespace Palworld {
 			throw std::runtime_error("Property ABPAssetMap has changed name in DT_CharacterCreationMeshPresetTable_Equipments, update is required");
 		}
 
-		uint8_t* EquipmentRowData = (uint8_t*)FMemory::Malloc(EquipmentRowStruct->GetStructureSize());
+		auto EquipmentRowData = FMemory::Malloc(EquipmentRowStruct->GetStructureSize());
 		EquipmentRowStruct->InitializeStruct(EquipmentRowData);
 
 		// Skeletal Mesh Map

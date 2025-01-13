@@ -181,7 +181,7 @@ namespace Palworld {
 	{
 		auto RowStruct = m_itemRecipeTable->GetRowStruct().UnderlyingObjectPointer;
 
-		uint8_t* ItemRecipeData = (uint8_t*)FMemory::Malloc(RowStruct->GetStructureSize());
+		auto ItemRecipeData = FMemory::Malloc(RowStruct->GetStructureSize());
 		RowStruct->InitializeStruct(ItemRecipeData);
 
 		for (auto& [property_name, property_value] : Recipe.items())
@@ -260,7 +260,7 @@ namespace Palworld {
 			auto TextProperty = TranslationRowStruct->GetPropertyByName(STR("TextData"));
 			if (TextProperty)
 			{
-				uint8_t* TranslationRowData = (uint8_t*)FMemory::Malloc(TranslationRowStruct->GetStructureSize());
+				auto TranslationRowData = FMemory::Malloc(TranslationRowStruct->GetStructureSize());
 				TranslationRowStruct->InitializeStruct(TranslationRowData);
 
 				try
@@ -284,7 +284,7 @@ namespace Palworld {
 			auto TextProperty = TranslationRowStruct->GetPropertyByName(STR("TextData"));
 			if (TextProperty)
 			{
-				uint8_t* TranslationRowData = (uint8_t*)FMemory::Malloc(TranslationRowStruct->GetStructureSize());
+				auto TranslationRowData = FMemory::Malloc(TranslationRowStruct->GetStructureSize());
 				TranslationRowStruct->InitializeStruct(TranslationRowData);
 
 				try

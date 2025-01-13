@@ -58,7 +58,7 @@ namespace Palworld {
 						}
 						else
 						{
-							uint8_t* NewRowData = (uint8_t*)FMemory::Malloc(RowStruct->GetStructureSize());
+							auto NewRowData = FMemory::Malloc(RowStruct->GetStructureSize());
 							RowStruct->InitializeStruct(NewRowData);
 
 							for (auto Property : RowStruct->ForEachPropertyInChain())

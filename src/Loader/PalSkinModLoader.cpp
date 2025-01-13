@@ -132,7 +132,7 @@ namespace Palworld {
 				throw std::runtime_error("Property 'Icon' has changed in DT_PalCharacterIconDataTable_SkinOverride. Update to Pal Schema is needed.");
 			}
 
-			uint8_t* IconRowData = (uint8_t*)FMemory::Malloc(IconRowStruct->GetStructureSize());
+			auto IconRowData = FMemory::Malloc(IconRowStruct->GetStructureSize());
 			IconRowStruct->InitializeStruct(IconRowData);
 
 			try
@@ -200,7 +200,7 @@ namespace Palworld {
 		auto TextProperty = TranslationRowStruct->GetPropertyByName(STR("TextData"));
 		if (TextProperty)
 		{
-			uint8_t* TranslationRowData = (uint8_t*)FMemory::Malloc(TranslationRowStruct->GetStructureSize());
+			auto TranslationRowData = FMemory::Malloc(TranslationRowStruct->GetStructureSize());
 			TranslationRowStruct->InitializeStruct(TranslationRowData);
 
 			try
