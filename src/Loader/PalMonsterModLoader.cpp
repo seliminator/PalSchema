@@ -130,6 +130,10 @@ namespace Palworld {
 					BlueprintTableRow->BPClass = UECustom::TSoftClassPtr<RC::Unreal::UClass>(UECustom::FSoftObjectPath(BlueprintPath));
 				}
 			}
+            else if (KeyName == STR("Loot"))
+            {
+                AddLoot(CharacterId, value);
+            }
 			else
 			{
 				auto Property = RowStruct->GetPropertyByName(KeyName.c_str());
