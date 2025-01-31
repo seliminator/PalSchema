@@ -143,7 +143,7 @@ Here's an example of suggestions as well:
 
 ![Schema Suggestions](assets/schema_suggestions.png)
 
-5. Let's test it in-game.
+5. Done, That's everything! If you're used to having to package the mod into a .pak file, that step is completely removed with PalSchema as it loads the .json file directly when you launch the game. Let's test the mod in-game!
 
 ![alt text](assets/congratulations.png)
 
