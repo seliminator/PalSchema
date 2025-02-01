@@ -17,3 +17,5 @@ Documentation for modders can be found [here](https://okaetsu.github.io/PalSchem
 # Mods using PalSchema
 
 [True Recipes](https://www.nexusmods.com/palworld/mods/2159) by The Sin of Pride
+
+[Bounty Shop Plus](https://www.nexusmods.com/palworld/mods/2162) by TheGameAce
