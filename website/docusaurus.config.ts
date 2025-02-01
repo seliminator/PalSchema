@@ -7,7 +7,7 @@ import type * as Preset from '@docusaurus/preset-classic';
 const config: Config = {
   title: 'PalSchema',
   tagline: '',
-  favicon: 'img/favicon.ico',
+  favicon: 'img/favicon.png',
 
   // Set the production url of your site here
   url: 'https://okaetsu.github.io',
@@ -58,13 +58,12 @@ const config: Config = {
   ],
 
   themeConfig: {
-    // Replace with your project's social card
-    image: 'img/docusaurus-social-card.jpg',
+    image: 'img/palschema_card.png',
     navbar: {
       title: 'PalSchema',
       logo: {
         alt: 'Logo',
-        src: 'img/logo.svg',
+        src: 'img/palschema.png',
       },
       items: [
         {
