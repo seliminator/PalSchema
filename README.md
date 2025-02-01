@@ -13,3 +13,7 @@ PalSchema is a mod that allows modifying of data tables in Palworld with json fi
 # Documentation
 
 Documentation for modders can be found [here](https://okaetsu.github.io/PalSchema/docs/gettingstarted)
+
+# Mods using PalSchema
+
+[True Recipes](https://www.nexusmods.com/palworld/mods/2159) by The Sin of Pride
