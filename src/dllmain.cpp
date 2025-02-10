@@ -5,6 +5,7 @@
 #include "Unreal/UFunction.hpp"
 #include "Loader/PalMainLoader.h"
 #include "Tools/EnumSchemaDefinitionGenerator.h"
+#include "Utility/Config.h"
 #include <iostream>
 
 using namespace RC;
@@ -16,7 +17,7 @@ public:
     PalSchema() : CppUserModBase()
     {
         ModName = STR("PalSchema");
-        ModVersion = STR("0.1.1-beta");
+        ModVersion = STR("0.2.0-beta");
         ModDescription = STR("Allows modifying of Palworld's DataTables and DataAssets dynamically.");
         ModAuthors = STR("Okaetsu");
 
@@ -35,14 +36,16 @@ public:
     {
         Output::send<LogLevel::Verbose>(STR("[{}] loaded successfully!\n"), ModName);
 
-        Unreal::Hook::RegisterProcessLocalScriptFunctionPostCallback([&](UObject* Context, FFrame& Stack, void* RESULT_DECL) {
-            if (m_hasInitialized) return;
-            m_hasInitialized = true;
+        PS::PSConfig::Load();
+
+        static bool HasInitialized = false;
+        Unreal::Hook::RegisterProcessEventPostCallback([&](UObject* Context, UFunction* Function, void* Parms) {
+            if (HasInitialized) return;
+            HasInitialized = true;
             MainLoader.Initialize();
         });
     }
 private:
-    bool m_hasInitialized = false;
     Palworld::PalMainLoader MainLoader;
 };
 

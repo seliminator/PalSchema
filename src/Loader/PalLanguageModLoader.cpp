@@ -5,6 +5,7 @@
 #include "SDK/Classes/KismetInternationalizationLibrary.h"
 #include "Loader/PalLanguageModLoader.h"
 #include "Utility/StringHelpers.h"
+#include "Utility/Config.h"
 #include "Helpers/String.hpp"
 
 using namespace RC;
@@ -43,8 +44,19 @@ namespace Palworld {
 
 	void PalLanguageModLoader::Initialize()
 	{
-		auto language = Palworld::UKismetInternationalizationLibrary::GetCurrentLanguage();
-		m_currentLanguage = RC::to_string(language.GetCharArray());
+        auto languageOverride = PS::PSConfig::GetLanguageOverride();
+
+        if (languageOverride == "")
+        {
+            auto language = Palworld::UKismetInternationalizationLibrary::GetCurrentLanguage();
+            m_currentLanguage = RC::to_string(language.GetCharArray());
+            Output::send<LogLevel::Normal>(STR("Language override not set, using current language.\n"));
+        }
+        else
+        {
+            m_currentLanguage = languageOverride;
+            Output::send<LogLevel::Normal>(STR("Language override set to {}.\n"), RC::to_generic_string(languageOverride));
+        }
 
 		std::vector<UObject*> Objects;
 		UObjectGlobals::FindAllOf(TEXT("DataTable"), Objects);
