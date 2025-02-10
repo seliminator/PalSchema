@@ -14,3 +14,7 @@ Documentation for modders can be found [here](https://okaetsu.github.io/PalSchem
 [True Recipes](https://www.nexusmods.com/palworld/mods/2159) by The Sin of Pride
 
 [Bounty Shop Plus](https://www.nexusmods.com/palworld/mods/2162) by TheGameAce
+
+[Dog Coin Replacer](https://www.nexusmods.com/palworld/mods/2197) by DeltaJordan
+
+[Additional Skins for PalSchema](https://www.nexusmods.com/palworld/mods/2199) by William112792
