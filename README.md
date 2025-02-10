@@ -18,3 +18,5 @@ Documentation for modders can be found [here](https://okaetsu.github.io/PalSchem
 [Dog Coin Replacer](https://www.nexusmods.com/palworld/mods/2197) by DeltaJordan
 
 [Additional Skins for PalSchema](https://www.nexusmods.com/palworld/mods/2199) by William112792
+
+[Faster Yakumo for PalSchema](https://www.nexusmods.com/palworld/mods/2207) by MelwenMods
