@@ -4,6 +4,7 @@
 #include <DynamicOutput/DynamicOutput.hpp>
 #include <Helpers/String.hpp>
 #include "Utility/Config.h"
+#include "Utility/Logging.h"
 
 namespace fs = std::filesystem;
 
@@ -54,7 +55,7 @@ namespace PS {
             {
                 if (!data.at("languageOverride").is_string())
                 {
-                    Output::send<LogLevel::Error>(STR("languageOverride in config.json wasn't a string, resetting to default.\n"));
+                    PS::Log<RC::LogLevel::Error>(STR("languageOverride in config.json wasn't a string, resetting to default.\n"));
                     data["languageOverride"] = "";
                     ShouldResave = true;
                 }
@@ -70,7 +71,7 @@ namespace PS {
             {
                 if (!data.at("enableExperimentalBlueprintSupport").is_boolean())
                 {
-                    Output::send<LogLevel::Error>(STR("enableExperimentalBlueprintSupport in config.json wasn't a bool, resetting to default.\n"));
+                    PS::Log<RC::LogLevel::Error>(STR("enableExperimentalBlueprintSupport in config.json wasn't a bool, resetting to default.\n"));
                     data["enableExperimentalBlueprintSupport"] = false;
                     ShouldResave = true;
                 }
@@ -84,11 +85,11 @@ namespace PS {
                 out_file.close();
             }
 
-            Output::send<LogLevel::Normal>(STR("PalSchema config loaded.\n"));
+            PS::Log<RC::LogLevel::Normal>(STR("PalSchema config loaded.\n"));
         }
         catch (const std::exception& e)
         {
-            Output::send<LogLevel::Error>(STR("Failed to load PalSchema Config: {}\n"), RC::to_generic_string(e.what()));
+            PS::Log<RC::LogLevel::Error>(STR("Failed to load PalSchema Config: {}\n"), RC::to_generic_string(e.what()));
         }
     }
 
@@ -99,7 +100,7 @@ namespace PS {
             return m_config->m_languageOverride;
         }
 
-        Output::send<LogLevel::Error>(STR("PalSchema Config must be initialized first before accessing GetLanguageOverride!"));
+        PS::Log<RC::LogLevel::Error>(STR("PalSchema Config must be initialized first before accessing GetLanguageOverride!"));
 
         return "";
     }
@@ -111,7 +112,7 @@ namespace PS {
             return m_config->m_enableExperimentalBlueprintSupport;
         }
 
-        Output::send<LogLevel::Error>(STR("PalSchema Config must be initialized first before accessing IsExperimentalBlueprintSupportEnabled!"));
+        PS::Log<RC::LogLevel::Error>(STR("PalSchema Config must be initialized first before accessing IsExperimentalBlueprintSupportEnabled!"));
 
         return false;
     }

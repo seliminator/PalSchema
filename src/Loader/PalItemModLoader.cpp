@@ -10,6 +10,7 @@
 #include "SDK/Structs/FPalCharacterIconDataRow.h"
 #include "Helpers/String.hpp"
 #include "Utility/DataTableHelper.h"
+#include "Utility/Logging.h"
 #include "Loader/PalItemModLoader.h"
 
 using namespace RC;
@@ -146,7 +147,7 @@ namespace Palworld {
 
 		m_itemDataAsset->StaticItemDataMap.Add(ItemId, Item);
 
-		Output::send<LogLevel::Normal>(STR("Added new Item '{}'\n"), ItemId.ToString());
+		PS::Log<RC::LogLevel::Normal>(STR("Added new Item '{}'\n"), ItemId.ToString());
 	}
 
 	void PalItemModLoader::Edit(const RC::Unreal::FName& ItemId, UPalStaticItemDataBase* Item, const nlohmann::json& Data)

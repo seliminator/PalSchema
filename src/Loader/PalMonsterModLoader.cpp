@@ -7,6 +7,7 @@
 #include "SDK/Structs/FPalBPClassDataRow.h"
 #include "SDK/EnumCache.h"
 #include "Utility/DataTableHelper.h"
+#include "Utility/Logging.h"
 #include "Helpers/String.hpp"
 #include "Loader/PalMonsterModLoader.h"
 
@@ -103,7 +104,7 @@ namespace Palworld {
 
 		AddTranslations(CharacterId, properties);
 
-		Output::send<LogLevel::Normal>(STR("Added new Pal '{}'\n"), CharacterId.ToString());
+        PS::Log<RC::LogLevel::Normal>(STR("Added new Pal '{}'\n"), CharacterId.ToString());
 	}
 
 	void PalMonsterModLoader::Edit(uint8_t* TableRow, const RC::Unreal::FName& CharacterId, const nlohmann::json& properties)
@@ -167,25 +168,25 @@ namespace Palworld {
 		{
 			if (!value.contains("WazaID"))
 			{
-				Output::send<LogLevel::Error>(STR("WazaID was not specified in {}, skipping ability entry.\n"), CharacterId.ToString());
+				PS::Log<RC::LogLevel::Error>(STR("WazaID was not specified in {}, skipping ability entry.\n"), CharacterId.ToString());
 				continue;
 			}
 
 			if (!value.contains("Level"))
 			{
-				Output::send<LogLevel::Error>(STR("Level was not specified in {}, skipping ability entry.\n"), CharacterId.ToString());
+				PS::Log<RC::LogLevel::Error>(STR("Level was not specified in {}, skipping ability entry.\n"), CharacterId.ToString());
 				continue;
 			}
 
 			if (!value.at("WazaID").is_string())
 			{
-				Output::send<LogLevel::Error>(STR("WazaID in {} must be a string, skipping ability entry.\n"), CharacterId.ToString());
+				PS::Log<RC::LogLevel::Error>(STR("WazaID in {} must be a string, skipping ability entry.\n"), CharacterId.ToString());
 				continue;
 			}
 
 			if (!value.at("Level").is_number_integer())
 			{
-				Output::send<LogLevel::Error>(STR("Level in {} must be an integer, skipping ability entry.\n"), CharacterId.ToString());
+				PS::Log<RC::LogLevel::Error>(STR("Level in {} must be an integer, skipping ability entry.\n"), CharacterId.ToString());
 				continue;
 			}
 
@@ -243,49 +244,49 @@ namespace Palworld {
 
 			if (!loot.contains("ItemId"))
 			{
-				Output::send<LogLevel::Error>(STR("ItemId was not specified in {}, skipping loot entry.\n"), CharacterId.ToString());
+				PS::Log<RC::LogLevel::Error>(STR("ItemId was not specified in {}, skipping loot entry.\n"), CharacterId.ToString());
 				continue;
 			}
 
 			if (!loot.contains("DropChance"))
 			{
-				Output::send<LogLevel::Error>(STR("DropChance was not specified in {}, skipping loot entry.\n"), CharacterId.ToString());
+				PS::Log<RC::LogLevel::Error>(STR("DropChance was not specified in {}, skipping loot entry.\n"), CharacterId.ToString());
 				continue;
 			}
 
 			if (!loot.contains("Min"))
 			{
-				Output::send<LogLevel::Error>(STR("Min was not specified in {}, skipping loot entry.\n"), CharacterId.ToString());
+				PS::Log<RC::LogLevel::Error>(STR("Min was not specified in {}, skipping loot entry.\n"), CharacterId.ToString());
 				continue;
 			}
 
 			if (!loot.contains("Max"))
 			{
-				Output::send<LogLevel::Error>(STR("Max was not specified in {}, skipping loot entry.\n"), CharacterId.ToString());
+				PS::Log<RC::LogLevel::Error>(STR("Max was not specified in {}, skipping loot entry.\n"), CharacterId.ToString());
 				continue;
 			}
 
 			if (!loot.at("ItemId").is_string())
 			{
-				Output::send<LogLevel::Error>(STR("ItemId in {} must be a string, skipping loot entry.\n"), CharacterId.ToString());
+				PS::Log<RC::LogLevel::Error>(STR("ItemId in {} must be a string, skipping loot entry.\n"), CharacterId.ToString());
 				continue;
 			}
 
 			if (!loot.at("DropChance").is_number_float())
 			{
-				Output::send<LogLevel::Error>(STR("DropChance in {} must be a float, skipping loot entry.\n"), CharacterId.ToString());
+				PS::Log<RC::LogLevel::Error>(STR("DropChance in {} must be a float, skipping loot entry.\n"), CharacterId.ToString());
 				continue;
 			}
 
 			if (!loot.at("Min").is_number_integer())
 			{
-				Output::send<LogLevel::Error>(STR("Min in {} must be an integer, skipping loot entry.\n"), CharacterId.ToString());
+				PS::Log<RC::LogLevel::Error>(STR("Min in {} must be an integer, skipping loot entry.\n"), CharacterId.ToString());
 				continue;
 			}
 
 			if (!loot.at("Max").is_number_integer())
 			{
-				Output::send<LogLevel::Error>(STR("Max in {} must be an integer, skipping loot entry.\n"), CharacterId.ToString());
+				PS::Log<RC::LogLevel::Error>(STR("Max in {} must be an integer, skipping loot entry.\n"), CharacterId.ToString());
 				continue;
 			}
 

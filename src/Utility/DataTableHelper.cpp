@@ -15,6 +15,7 @@
 #include "Unreal/UEnum.hpp"
 #include "Unreal/UScriptStruct.hpp"
 #include "Utility/DataTableHelper.h"
+#include "Utility/Logging.h"
 #include "SDK/Classes/TSoftObjectPtr.h"
 #include "SDK/Classes/Texture2D.h"
 #include "SDK/Classes/TSoftClassPtr.h"
@@ -82,7 +83,7 @@ void Palworld::DataTableHelper::CopyJsonValueToTableRow(void* TableRow, RC::Unre
 		}
 		else
 		{
-			Output::send<LogLevel::Warning>(STR("Unhandled Numeric Type: {}\n"), Property->GetName());
+			PS::Log<RC::LogLevel::Warning>(STR("Unhandled Numeric Type: {}\n"), Property->GetName());
 		}
 	}
 	else if (auto BoolProperty = CastField<FBoolProperty>(Property))
@@ -211,6 +212,6 @@ void Palworld::DataTableHelper::CopyJsonValueToTableRow(void* TableRow, RC::Unre
 	}
 	else
 	{
-		Output::send<LogLevel::Warning>(STR("Unhandled property '{}' with class of {} and type of {}\n"), PropertyName, ClassName, Type.GetCharArray());
+		PS::Log<RC::LogLevel::Warning>(STR("Unhandled property '{}' with class of {} and type of {}\n"), PropertyName, ClassName, Type.GetCharArray());
 	}
 }
