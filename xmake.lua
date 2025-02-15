@@ -9,6 +9,7 @@ after_load(function(target)
 end)
 rule_end()
 
+add_requires("safetyhook", {debug = is_mode_debug(), configs = {runtimes = get_mode_runtimes()}})
 add_requires("json", {debug = is_mode_debug(), configs = {runtimes = get_mode_runtimes()}})
 
 target(projectName)
@@ -16,4 +17,5 @@ target(projectName)
     add_includedirs("include")
     add_headerfiles("include/**.h")
     add_files("src/**.cpp")
+    add_packages("zydis", "zycore", "safetyhook")
     add_packages("json")
