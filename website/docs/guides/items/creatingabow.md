@@ -176,7 +176,7 @@ Now, to make sure our new Bow is actually usable in the game, we'll have to crea
         "AttackValue": 250,
         "SneakAttackRate": 1.0,
         "Durability": 1000.0,
-        "actorClass": "/Game/Pal/Blueprint/MyNewWeaponMod/Blueprint/BP_BowMeteor.BP_BowMeteor_C",
+        "actorClass": "/Game/Pal/Blueprint/MyNewWeaponMod/Blueprint/BP_BowMeteor.BP_BowMeteor",
         "Recipe": {
             "Product_Count": 1,
             "WorkAmount": 500.0,
@@ -195,9 +195,7 @@ Now, to make sure our new Bow is actually usable in the game, we'll have to crea
 
   You can obtain the path to the weapon actor by going back into Unreal Editor, right-clicking on the `BP_BowMeteor` asset in the Content Browser and selecting `Copy Reference` which will give you a string like:
   
-  `/Script/Engine.Blueprint'/Game/Pal/Blueprint/MyNewWeaponMod/Blueprint/BP_BowMeteor.BP_BowMeteor'` which you'll have to trim down and modify to `/Game/Pal/Blueprint/MyNewWeaponMod/Blueprint/BP_BowMeteor.BP_BowMeteor_C`
-
-  Since we're working with a class property here which is the `actorClass` field, we want to make sure it ends with a `_C`, otherwise it won't load properly in-game.
+  `/Script/Engine.Blueprint'/Game/Pal/Blueprint/MyNewWeaponMod/Blueprint/BP_BowMeteor.BP_BowMeteor'` which you'll have to trim down and modify to `/Game/Pal/Blueprint/MyNewWeaponMod/Blueprint/BP_BowMeteor.BP_BowMeteor`.
 
   ![](assets/copy_reference.png)
 
