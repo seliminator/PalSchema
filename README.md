@@ -1,5 +1,5 @@
 # PalSchema
-PalSchema is a mod that allows modifying of data tables in Palworld with json files without introducing conflicts with other mods that modify the same data table. As the name suggests, I've also made heavy use of json schema, so mod creators can have autocompletion and error checking to make creation of table mods easier.
+PalSchema is a mod that allows modifying of data tables and blueprints in Palworld with json files without introducing conflicts with other mods that modify the same game files. As the name suggests, I've also made heavy use of json schema, so mod creators can have autocompletion and error checking to make creation of table mods easier.
 
 # Installation
 
