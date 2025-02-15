@@ -142,7 +142,7 @@ namespace Palworld {
                 try
                 {
                     PalBlueprintModLoader::ApplyMod(Mod, DefaultObject);
-                    Output::send<LogLevel::Verbose>(STR("[PalSchema] Applied modifications to {}\n"), Mod.GetBlueprintName().ToString());
+                    Output::send<LogLevel::Normal>(STR("[PalSchema] Applied modifications to {}\n"), Mod.GetBlueprintName().ToString());
                 }
                 catch (const std::exception& e)
                 {
