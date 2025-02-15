@@ -32,6 +32,11 @@ public:
     {
     }
 
+    auto on_program_start() -> void override
+    {
+        MainLoader.PreInitialize();
+    }
+
     auto on_unreal_init() -> void override
     {
         Output::send<LogLevel::Verbose>(STR("[{}] loaded successfully!\n"), ModName);

@@ -82,7 +82,7 @@ void Palworld::DataTableHelper::CopyJsonValueToTableRow(void* TableRow, RC::Unre
 		}
 		else
 		{
-			Output::send<LogLevel::Error>(STR("Unhandled Numeric Type: {}\n"), Property->GetName());
+			Output::send<LogLevel::Warning>(STR("Unhandled Numeric Type: {}\n"), Property->GetName());
 		}
 	}
 	else if (auto BoolProperty = CastField<FBoolProperty>(Property))
@@ -111,15 +111,16 @@ void Palworld::DataTableHelper::CopyJsonValueToTableRow(void* TableRow, RC::Unre
 		auto Text = FText(RC::to_generic_string(ParsedValue).c_str());
 		TextProperty->SetPropertyValue(PropertyValue, Text);
 	}
-	else if (auto SoftObjectProperty = CastField<FSoftObjectProperty>(Property))
+	else if (auto SoftObjectProperty = CastField<FSoftObjectProperty>(Property) && ClassName == STR("SoftObjectProperty"))
 	{
 		if (!Value.is_string()) throw std::runtime_error(std::format("Property {} must be a string", RC::to_string(PropertyName)));
 		auto ParsedValue = Value.get<std::string>();
 		auto String = RC::to_generic_string(ParsedValue);
+
 		auto SoftObjectPtr = UECustom::TSoftObjectPtr<UObject>(UECustom::FSoftObjectPath(String));
 		FMemory::Memcpy(PropertyValue, &SoftObjectPtr, sizeof(UECustom::TSoftObjectPtr<UObject>));
 	}
-	else if (auto SoftClassProperty = CastField<FSoftClassProperty>(Property))
+	else if (auto SoftClassProperty = CastField<FSoftClassProperty>(Property) && ClassName == STR("SoftClassProperty"))
 	{
 		if (!Value.is_string()) throw std::runtime_error(std::format("Property {} must be a string", RC::to_string(PropertyName)));
 		auto ParsedValue = Value.get<std::string>();

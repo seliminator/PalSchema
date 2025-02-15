@@ -10,6 +10,7 @@
 #include "DynamicOutput/DynamicOutput.hpp"
 #include "Helpers/String.hpp"
 #include "Loader/PalMainLoader.h"
+#include <Utility/Config.h>
 
 using namespace RC;
 using namespace RC::Unreal;
@@ -17,7 +18,12 @@ using namespace RC::Unreal;
 namespace fs = std::filesystem;
 
 namespace Palworld {
-	void PalMainLoader::Initialize()
+    void PalMainLoader::PreInitialize()
+    {
+        InitializeBlueprintModLoader();
+    }
+
+    void PalMainLoader::Initialize()
 	{
 		LanguageModLoader.Initialize();
 		MonsterModLoader.Initialize();
@@ -29,29 +35,47 @@ namespace Palworld {
 		SpawnerModLoader.Initialize();
 		RawTableLoader.Initialize();
 
-		// Need a better method for modifying spawner class defaults during runtime since they're loaded on demand and the spawn info is tied to those blueprints...
-		// This is the best way I could think of right now.
-		// Alternative would be to set RF_Standalone EObjectFlag which may or may not cause issues.
-		// Commented out due to crashing issues.
-		/*
-		static auto SpawnerClass = UObjectGlobals::StaticFindObject<UClass*>(nullptr, nullptr, STR("/Game/Pal/Blueprint/Spawner/BP_PalSpawner_Standard.BP_PalSpawner_Standard_C"));
-		Hook::RegisterBeginPlayPostCallback([&](AActor* Actor) {
-			if (!Actor) return;
-
-			if (!Actor->GetClassPrivate()) return;
-
-			if (Actor->GetClassPrivate()->GetSuperClass() == SpawnerClass)
-			{
-				SpawnerModLoader.ApplySpawnerMod(Actor);
-			}
-		});
-		*/
-
 		Load();
 	}
 
-	void PalMainLoader::Load()
+    void PalMainLoader::InitializeBlueprintModLoader()
+    {
+        if (PS::PSConfig::IsExperimentalBlueprintSupportEnabled())
+        {
+            Output::send<LogLevel::Normal>(STR("[PalSchema] Experimental Blueprint Support is enabled.\n"));
+            BlueprintModLoader.Initialize();
+
+            // For backwards compatibility with old UE4SS path
+            fs::path cwd = fs::current_path() / "Mods" / "PalSchema" / "mods";
+
+            if (!fs::exists(cwd))
+            {
+                cwd = fs::current_path() / "ue4ss" / "Mods" / "PalSchema" / "mods";
+            }
+
+            if (fs::exists(cwd))
+            {
+                for (const auto& entry : fs::directory_iterator(cwd)) {
+                    if (entry.is_directory())
+                    {
+                        auto& modsPath = entry.path();
+
+                        auto blueprintFolder = modsPath / "blueprints";
+                        if (fs::is_directory(blueprintFolder))
+                        {
+                            Output::send<LogLevel::Normal>(STR("Loading mod: {}\n"), modsPath.stem().native());
+
+                            LoadBlueprintMods(blueprintFolder);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    void PalMainLoader::Load()
 	{
+        // For backwards compatibility with old UE4SS path
 		fs::path cwd = fs::current_path() / "Mods" / "PalSchema" / "mods";
 
 		if (!fs::exists(cwd))
@@ -101,7 +125,7 @@ namespace Palworld {
 					auto buildingsFolder = modsPath / "buildings";
 					if (fs::is_directory(buildingsFolder))
 					{
-						LoadSpawnerMods(buildingsFolder);
+						LoadBuildingMods(buildingsFolder);
 					}
 
 					auto rawFolder = modsPath / "raw";
@@ -256,7 +280,7 @@ namespace Palworld {
 					{
 						std::ifstream f(filePath);
 						nlohmann::json data = nlohmann::json::parse(f);
-						SpawnerModLoader.Load(data);
+						BuildingModLoader.Load(data);
 						Output::send<LogLevel::Normal>(STR("Building Mod '{}' loaded.\n"), filePath.filename().native());
 					}
 				}
@@ -315,4 +339,28 @@ namespace Palworld {
 			}
 		}
 	}
+
+    void PalMainLoader::LoadBlueprintMods(const std::filesystem::path& path)
+    {
+        for (const auto& blueprintFile : fs::directory_iterator(path)) {
+            try
+            {
+                auto blueprintFilePath = blueprintFile.path();
+                if (blueprintFilePath.has_extension())
+                {
+                    if (blueprintFilePath.extension() == ".json")
+                    {
+                        std::ifstream f(blueprintFilePath);
+                        nlohmann::json data = nlohmann::json::parse(f);
+                        BlueprintModLoader.Load(data);
+                        Output::send<LogLevel::Normal>(STR("Blueprint mods in '{}' loaded.\n"), blueprintFilePath.filename().native());
+                    }
+                }
+            }
+            catch (const std::exception& e)
+            {
+                Output::send<LogLevel::Error>(STR("Failed parsing blueprint mod {} - {}.\n"), RC::to_generic_string(blueprintFile.path().native()), RC::to_generic_string(e.what()));
+            }
+        }
+    }
 }

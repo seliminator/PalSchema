@@ -9,10 +9,13 @@
 #include "Loader/PalBuildingModLoader.h"
 #include "Loader/PalSpawnerModLoader.h"
 #include "Loader/PalRawTableLoader.h"
+#include "Loader/PalBlueprintModLoader.h"
 
 namespace Palworld {
 	class PalMainLoader {
 	public:
+		void PreInitialize();
+
 		void Initialize();
 	private:
 		PalLanguageModLoader LanguageModLoader;
@@ -24,6 +27,9 @@ namespace Palworld {
 		PalBuildingModLoader BuildingModLoader;
 		PalSpawnerModLoader SpawnerModLoader;
 		PalRawTableLoader RawTableLoader;
+		PalBlueprintModLoader BlueprintModLoader;
+
+        void InitializeBlueprintModLoader();
 
 		void Load();
 
@@ -40,6 +46,8 @@ namespace Palworld {
 		void LoadBuildingMods(const std::filesystem::path& path);
 
 		void LoadRawTables(const std::filesystem::path& path);
+
+		void LoadBlueprintMods(const std::filesystem::path& path);
 
 		void LoadAppearanceMods(const std::filesystem::path& path);
 	};

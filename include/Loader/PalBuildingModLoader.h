@@ -27,8 +27,13 @@ namespace Palworld {
 		UECustom::UDataTable* m_mapObjectFarmCrop;
 		UECustom::UDataTable* m_mapObjectItemProductDataTable;
 		UECustom::UDataTable* m_mapObjectMasterDataTable;
+		UECustom::UDataTable* m_mapObjectNameTable;
 		UECustom::UDataTable* m_buildObjectDataTable;
 		UECustom::UDataTable* m_buildObjectIconDataTable;
+        UECustom::UDataTable* m_buildObjectDescTable;
+		UECustom::UDataTable* m_technologyRecipeUnlockTable;
+		UECustom::UDataTable* m_technologyNameTable;
+		UECustom::UDataTable* m_technologyDescTable;
 
 		void Add(const RC::Unreal::FName& BuildingId, const nlohmann::json& Data);
 
@@ -43,5 +48,13 @@ namespace Palworld {
 		void SetupCropData(const RC::Unreal::FName& BuildingId, const nlohmann::json& Data);
 
 		void SetupItemProduceData(const RC::Unreal::FName& BuildingId, const nlohmann::json& Data);
+
+		void SetupTechnologyData(const RC::Unreal::FName& BuildingId, const nlohmann::json& Data);
+
+        void SetupTranslations(const RC::Unreal::FName& BuildingId, const nlohmann::json& Data);
+    private:
+        static inline int64_t RadialIndex = 1000;
+
+        static int64_t GetNextRadialIndex();
 	};
 }
