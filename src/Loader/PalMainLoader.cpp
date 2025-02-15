@@ -11,6 +11,7 @@
 #include "Helpers/String.hpp"
 #include "Loader/PalMainLoader.h"
 #include <Utility/Config.h>
+#include <Utility/Logging.h>
 
 using namespace RC;
 using namespace RC::Unreal;
@@ -42,7 +43,7 @@ namespace Palworld {
     {
         if (PS::PSConfig::IsExperimentalBlueprintSupportEnabled())
         {
-            Output::send<LogLevel::Normal>(STR("[PalSchema] Experimental Blueprint Support is enabled.\n"));
+            PS::Log<RC::LogLevel::Normal>(STR("Experimental Blueprint Support is enabled.\n"));
             BlueprintModLoader.Initialize();
 
             // For backwards compatibility with old UE4SS path
@@ -63,7 +64,7 @@ namespace Palworld {
                         auto blueprintFolder = modsPath / "blueprints";
                         if (fs::is_directory(blueprintFolder))
                         {
-                            Output::send<LogLevel::Normal>(STR("Loading mod: {}\n"), modsPath.stem().native());
+                            PS::Log<RC::LogLevel::Normal>(STR("Loading mod: {}\n"), modsPath.stem().native());
 
                             LoadBlueprintMods(blueprintFolder);
                         }
@@ -90,7 +91,7 @@ namespace Palworld {
 				{
 					auto& modsPath = entry.path();
 
-					Output::send<LogLevel::Normal>(STR("Loading mod: {}\n"), modsPath.stem().native());
+					PS::Log<RC::LogLevel::Normal>(STR("Loading mod: {}\n"), modsPath.stem().native());
 
 					auto palFolder = modsPath / "pals";
 					if (fs::is_directory(palFolder))
@@ -166,7 +167,7 @@ namespace Palworld {
 				}
 				catch (const std::exception& e)
 				{
-					Output::send<LogLevel::Error>(STR("Failed parsing language file {} - {}.\n"), RC::to_generic_string(translationFile.path().native()), RC::to_generic_string(e.what()));
+					PS::Log<RC::LogLevel::Error>(STR("Failed parsing language file {} - {}.\n"), RC::to_generic_string(translationFile.path().native()), RC::to_generic_string(e.what()));
 				}
 			}
 		}
@@ -185,13 +186,13 @@ namespace Palworld {
 						std::ifstream f(palFilePath);
 						nlohmann::json data = nlohmann::json::parse(f);
 						MonsterModLoader.Load(data);
-						Output::send<LogLevel::Normal>(STR("Pal Mod '{}' loaded.\n"), palFilePath.filename().native());
+						PS::Log<RC::LogLevel::Normal>(STR("Pal Mod '{}' loaded.\n"), palFilePath.filename().native());
 					}
 				}
 			}
 			catch (const std::exception& e)
 			{
-				Output::send<LogLevel::Error>(STR("Failed parsing pal file {} - {}.\n"), RC::to_generic_string(palFile.path().native()), RC::to_generic_string(e.what()));
+				PS::Log<RC::LogLevel::Error>(STR("Failed parsing pal file {} - {}.\n"), RC::to_generic_string(palFile.path().native()), RC::to_generic_string(e.what()));
 			}
 		}
 	}
@@ -209,13 +210,13 @@ namespace Palworld {
 						std::ifstream f(palFilePath);
 						nlohmann::json data = nlohmann::json::parse(f);
 						ItemModLoader.Load(data);
-						Output::send<LogLevel::Normal>(STR("Item Mod '{}' loaded.\n"), palFilePath.filename().native());
+						PS::Log<RC::LogLevel::Normal>(STR("Item Mod '{}' loaded.\n"), palFilePath.filename().native());
 					}
 				}
 			}
 			catch (const std::exception& e)
 			{
-				Output::send<LogLevel::Error>(STR("Failed parsing item file {} - {}.\n"), RC::to_generic_string(palFile.path().native()), RC::to_generic_string(e.what()));
+				PS::Log<RC::LogLevel::Error>(STR("Failed parsing item file {} - {}.\n"), RC::to_generic_string(palFile.path().native()), RC::to_generic_string(e.what()));
 			}
 		}
 	}
@@ -233,13 +234,13 @@ namespace Palworld {
 						std::ifstream f(palFilePath);
 						nlohmann::json data = nlohmann::json::parse(f);
 						SkinModLoader.Load(data);
-						Output::send<LogLevel::Normal>(STR("Skin Mod '{}' loaded.\n"), palFilePath.filename().native());
+						PS::Log<RC::LogLevel::Normal>(STR("Skin Mod '{}' loaded.\n"), palFilePath.filename().native());
 					}
 				}
 			}
 			catch (const std::exception& e)
 			{
-				Output::send<LogLevel::Error>(STR("Failed parsing skin file {} - {}.\n"), RC::to_generic_string(palFile.path().native()), RC::to_generic_string(e.what()));
+				PS::Log<RC::LogLevel::Error>(STR("Failed parsing skin file {} - {}.\n"), RC::to_generic_string(palFile.path().native()), RC::to_generic_string(e.what()));
 			}
 		}
 	}
@@ -257,13 +258,13 @@ namespace Palworld {
 						std::ifstream f(filePath);
 						nlohmann::json data = nlohmann::json::parse(f);
 						SpawnerModLoader.Load(data);
-						Output::send<LogLevel::Normal>(STR("Spawner Mod '{}' loaded.\n"), filePath.filename().native());
+						PS::Log<RC::LogLevel::Normal>(STR("Spawner Mod '{}' loaded.\n"), filePath.filename().native());
 					}
 				}
 			}
 			catch (const std::exception& e)
 			{
-				Output::send<LogLevel::Error>(STR("Failed parsing spawner file {} - {}.\n"), RC::to_generic_string(file.path().native()), RC::to_generic_string(e.what()));
+				PS::Log<RC::LogLevel::Error>(STR("Failed parsing spawner file {} - {}.\n"), RC::to_generic_string(file.path().native()), RC::to_generic_string(e.what()));
 			}
 		}
 	}
@@ -281,13 +282,13 @@ namespace Palworld {
 						std::ifstream f(filePath);
 						nlohmann::json data = nlohmann::json::parse(f);
 						BuildingModLoader.Load(data);
-						Output::send<LogLevel::Normal>(STR("Building Mod '{}' loaded.\n"), filePath.filename().native());
+						PS::Log<RC::LogLevel::Normal>(STR("Building Mod '{}' loaded.\n"), filePath.filename().native());
 					}
 				}
 			}
 			catch (const std::exception& e)
 			{
-				Output::send<LogLevel::Error>(STR("Failed parsing building file {} - {}.\n"), RC::to_generic_string(file.path().native()), RC::to_generic_string(e.what()));
+				PS::Log<RC::LogLevel::Error>(STR("Failed parsing building file {} - {}.\n"), RC::to_generic_string(file.path().native()), RC::to_generic_string(e.what()));
 			}
 		}
 	}
@@ -305,13 +306,13 @@ namespace Palworld {
 						std::ifstream f(palFilePath);
 						nlohmann::json data = nlohmann::json::parse(f);
 						AppearanceModLoader.Load(data);
-						Output::send<LogLevel::Normal>(STR("Appearance Mod '{}' loaded.\n"), palFilePath.filename().native());
+						PS::Log<RC::LogLevel::Normal>(STR("Appearance Mod '{}' loaded.\n"), palFilePath.filename().native());
 					}
 				}
 			}
 			catch (const std::exception& e)
 			{
-				Output::send<LogLevel::Error>(STR("Failed parsing appearance file {} - {}.\n"), RC::to_generic_string(palFile.path().native()), RC::to_generic_string(e.what()));
+				PS::Log<RC::LogLevel::Error>(STR("Failed parsing appearance file {} - {}.\n"), RC::to_generic_string(palFile.path().native()), RC::to_generic_string(e.what()));
 			}
 		}
 	}
@@ -329,13 +330,13 @@ namespace Palworld {
 						std::ifstream f(rawFilePath);
 						nlohmann::json data = nlohmann::json::parse(f);
 						RawTableLoader.Load(data);
-						Output::send<LogLevel::Normal>(STR("Raw Tables in '{}' loaded.\n"), rawFilePath.filename().native());
+						PS::Log<RC::LogLevel::Normal>(STR("Raw Tables in '{}' loaded.\n"), rawFilePath.filename().native());
 					}
 				}
 			}
 			catch (const std::exception& e)
 			{
-				Output::send<LogLevel::Error>(STR("Failed parsing raw table file {} - {}.\n"), RC::to_generic_string(rawFile.path().native()), RC::to_generic_string(e.what()));
+				PS::Log<RC::LogLevel::Error>(STR("Failed parsing raw table file {} - {}.\n"), RC::to_generic_string(rawFile.path().native()), RC::to_generic_string(e.what()));
 			}
 		}
 	}
@@ -353,13 +354,13 @@ namespace Palworld {
                         std::ifstream f(blueprintFilePath);
                         nlohmann::json data = nlohmann::json::parse(f);
                         BlueprintModLoader.Load(data);
-                        Output::send<LogLevel::Normal>(STR("Blueprint mods in '{}' loaded.\n"), blueprintFilePath.filename().native());
+                        PS::Log<RC::LogLevel::Normal>(STR("Blueprint mods in '{}' loaded.\n"), blueprintFilePath.filename().native());
                     }
                 }
             }
             catch (const std::exception& e)
             {
-                Output::send<LogLevel::Error>(STR("Failed parsing blueprint mod {} - {}.\n"), RC::to_generic_string(blueprintFile.path().native()), RC::to_generic_string(e.what()));
+                PS::Log<RC::LogLevel::Error>(STR("Failed parsing blueprint mod {} - {}.\n"), RC::to_generic_string(blueprintFile.path().native()), RC::to_generic_string(e.what()));
             }
         }
     }

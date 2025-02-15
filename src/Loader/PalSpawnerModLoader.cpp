@@ -8,6 +8,7 @@
 #include "SDK/Structs/FPalSpawnerGroupInfo.h"
 #include "SDK/EnumCache.h"
 #include "Helpers/String.hpp"
+#include "Utility/Logging.h"
 #include "Loader/PalSpawnerModLoader.h"
 
 using namespace RC;
@@ -31,7 +32,7 @@ namespace Palworld {
 				auto SpawnerIterator = m_spawners.find(RowId);
 				if (SpawnerIterator == m_spawners.end())
 				{
-					Output::send<LogLevel::Error>(STR("Failed to add Spawner {} because it was invalid\n"), RowId.ToString());
+					PS::Log<RC::LogLevel::Error>(STR("Failed to add Spawner {} because it was invalid\n"), RowId.ToString());
 					continue;
 				}
 
@@ -125,7 +126,7 @@ namespace Palworld {
 						}
 
 						NewData.PalList.push_back(PalData);
-						Output::send<LogLevel::Normal>(STR("Added a spawn for {} (Level {}-{}) to {}\n"), PalData.PalID.ToString(), PalData.Level, PalData.Level_Max,
+						PS::Log<RC::LogLevel::Normal>(STR("Added a spawn for {} (Level {}-{}) to {}\n"), PalData.PalID.ToString(), PalData.Level, PalData.Level_Max,
 							RC::to_generic_string(SpawnerName));
 					}
 				}

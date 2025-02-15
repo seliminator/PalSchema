@@ -10,6 +10,7 @@
 #include "SDK/Structs/FPalBPClassDataRow.h"
 #include "SDK/EnumCache.h"
 #include "Utility/DataTableHelper.h"
+#include "Utility/Logging.h"
 #include "Helpers/String.hpp"
 #include "Loader/PalSkinModLoader.h"
 
@@ -155,7 +156,7 @@ namespace Palworld {
 
 		StaticSkinMap->Add(SkinId, Item);
 
-		Output::send<LogLevel::Normal>(STR("Added new Skin '{}'\n"), SkinId.ToString());
+		PS::Log<RC::LogLevel::Normal>(STR("Added new Skin '{}'\n"), SkinId.ToString());
 	}
 
 	void PalSkinModLoader::Edit(const FName& SkinId, UObject* Item, const nlohmann::json& Data)

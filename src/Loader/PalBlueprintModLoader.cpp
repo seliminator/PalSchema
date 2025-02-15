@@ -6,6 +6,7 @@
 #include "Helpers/String.hpp"
 #include "Utility/DataTableHelper.h"
 #include "Utility/Config.h"
+#include "Utility/Logging.h"
 #include "Loader/PalBlueprintModLoader.h"
 
 #include <Signatures.hpp>
@@ -53,7 +54,7 @@ namespace Palworld {
                 [=](const SignatureContainer& self) {
                     if (!self.get_did_succeed())
                     {
-                        Output::send<LogLevel::Error>(STR("[PalSchema] Failed to find signature for UBlueprintGeneratedClass::PostLoadDefaultObject.\n"));
+                        PS::Log<RC::LogLevel::Error>(STR("Failed to find signature for UBlueprintGeneratedClass::PostLoadDefaultObject.\n"));
                     }
                 }
             };
@@ -127,7 +128,7 @@ namespace Palworld {
                 }
                 else
                 {
-                    Output::send<LogLevel::Warning>(STR("[PalSchema] Property '{}' does not exist in {}\n"), PropertyName, BPMod.GetBlueprintName().ToString());
+                    PS::Log<RC::LogLevel::Warning>(STR("Property '{}' does not exist in {}\n"), PropertyName, BPMod.GetBlueprintName().ToString());
                 }
             }
         }
@@ -142,11 +143,11 @@ namespace Palworld {
                 try
                 {
                     PalBlueprintModLoader::ApplyMod(Mod, DefaultObject);
-                    Output::send<LogLevel::Normal>(STR("[PalSchema] Applied modifications to {}\n"), Mod.GetBlueprintName().ToString());
+                    PS::Log<RC::LogLevel::Normal>(STR("Applied modifications to {}\n"), Mod.GetBlueprintName().ToString());
                 }
                 catch (const std::exception& e)
                 {
-                    Output::send<LogLevel::Error>(STR("[PalSchema] Failed modifying blueprint '{}', {}\n"), Mod.GetBlueprintName().ToString(), RC::to_generic_string(e.what()));
+                    PS::Log<RC::LogLevel::Error>(STR("Failed modifying blueprint '{}', {}\n"), Mod.GetBlueprintName().ToString(), RC::to_generic_string(e.what()));
                 }
             }
         }

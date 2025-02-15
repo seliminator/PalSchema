@@ -6,6 +6,7 @@
 #include "Loader/PalMainLoader.h"
 #include "Tools/EnumSchemaDefinitionGenerator.h"
 #include "Utility/Config.h"
+#include "Utility/Logging.h"
 #include <iostream>
 
 using namespace RC;
@@ -17,11 +18,11 @@ public:
     PalSchema() : CppUserModBase()
     {
         ModName = STR("PalSchema");
-        ModVersion = STR("0.2.0-beta");
+        ModVersion = STR("0.2.1-beta");
         ModDescription = STR("Allows modifying of Palworld's DataTables and DataAssets dynamically.");
         ModAuthors = STR("Okaetsu");
 
-        Output::send<LogLevel::Verbose>(STR("{} v{} by {} loaded.\n"), ModName, ModVersion, ModAuthors);
+        PS::Log<RC::LogLevel::Verbose>(STR("{} v{} by {} loaded.\n"), ModName, ModVersion, ModAuthors);
     }
 
     ~PalSchema() override
@@ -39,8 +40,6 @@ public:
 
     auto on_unreal_init() -> void override
     {
-        Output::send<LogLevel::Verbose>(STR("[{}] loaded successfully!\n"), ModName);
-
         PS::PSConfig::Load();
 
         static bool HasInitialized = false;

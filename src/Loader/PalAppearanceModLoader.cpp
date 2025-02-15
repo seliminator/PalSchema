@@ -9,6 +9,7 @@
 #include "SDK/Structs/FLinearColor.h"
 #include "SDK/EnumCache.h"
 #include "Utility/DataTableHelper.h"
+#include "Utility/Logging.h"
 #include "Helpers/String.hpp"
 #include "Loader/PalAppearanceModLoader.h"
 
@@ -97,7 +98,7 @@ namespace Palworld {
 				throw std::runtime_error(std::format("Unsupported Type '{}' in {}", Type, Key));
 			}
 
-			Output::send<LogLevel::Normal>(STR("Added new appearance '{}' as '{}'\n"), RowId.ToString(), RC::to_generic_string(Type));
+			PS::Log<RC::LogLevel::Normal>(STR("Added new appearance '{}' as '{}'\n"), RowId.ToString(), RC::to_generic_string(Type));
 		}
 	}
 
