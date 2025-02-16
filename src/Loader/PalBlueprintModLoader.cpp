@@ -81,55 +81,46 @@ namespace Palworld {
     void PalBlueprintModLoader::ApplyMod(const PalBlueprintMod& BPMod, UObject* Object)
     {
         UClass* Class = Object->GetClassPrivate();
-        auto ClassFullName = Class->GetFullName();
 
-        std::wregex PathRegex(STR("/Game/[^ ]+"));
-        std::wsmatch MatchResult;
-
-        if (std::regex_search(ClassFullName, MatchResult, PathRegex))
+        auto& Data = BPMod.GetData();
+        for (auto& [Key, Value] : Data.items())
         {
-            auto ExtractedPath = MatchResult.str();
-
-            auto& Data = BPMod.GetData();
-            for (auto& [Key, Value] : Data.items())
+            auto PropertyName = RC::to_generic_string(Key);
+            auto Property = Class->GetPropertyByNameInChain(PropertyName.c_str());
+            if (Property)
             {
-                auto PropertyName = RC::to_generic_string(Key);
-                auto Property = Class->GetPropertyByNameInChain(PropertyName.c_str());
-                if (Property)
+                if (auto ObjectProperty = CastField<FObjectProperty>(Property))
                 {
-                    if (auto ObjectProperty = CastField<FObjectProperty>(Property))
+                    auto ObjectValue = *Property->ContainerPtrToValuePtr<UObject*>(static_cast<void*>(Object));
+                    if (!ObjectValue)
                     {
-                        auto ObjectValue = *Property->ContainerPtrToValuePtr<UObject*>(static_cast<void*>(Object));
-                        if (!ObjectValue)
+                        auto GEN_VAR_PATH = std::format(STR("{}:{}_GEN_VARIABLE"), Class->GetPathName(), PropertyName);
+                        auto GEN_VAR_OBJECT = UObjectGlobals::StaticFindObject<UObject*>(nullptr, nullptr, GEN_VAR_PATH);
+                        if (GEN_VAR_OBJECT)
                         {
-                            auto GEN_VAR_PATH = std::format(STR("{}:{}_GEN_VARIABLE"), ExtractedPath, PropertyName);
-                            auto GEN_VAR_OBJECT = UObjectGlobals::StaticFindObject<UObject*>(nullptr, nullptr, GEN_VAR_PATH);
-                            if (GEN_VAR_OBJECT)
+                            if (Value.is_object())
                             {
-                                if (Value.is_object())
+                                for (auto& [InnerKey, InnerValue] : Value.items())
                                 {
-                                    for (auto& [InnerKey, InnerValue] : Value.items())
+                                    auto GEN_VAR_OBJECT_PROPERTY_NAME = RC::to_generic_string(InnerKey);
+                                    auto GEN_VAR_OBJECT_PROPERTY = GEN_VAR_OBJECT->GetPropertyByNameInChain(GEN_VAR_OBJECT_PROPERTY_NAME.c_str());
+                                    if (GEN_VAR_OBJECT_PROPERTY)
                                     {
-                                        auto GEN_VAR_OBJECT_PROPERTY_NAME = RC::to_generic_string(InnerKey);
-                                        auto GEN_VAR_OBJECT_PROPERTY = GEN_VAR_OBJECT->GetPropertyByNameInChain(GEN_VAR_OBJECT_PROPERTY_NAME.c_str());
-                                        if (GEN_VAR_OBJECT_PROPERTY)
-                                        {
-                                            Palworld::DataTableHelper::CopyJsonValueToTableRow(static_cast<void*>(GEN_VAR_OBJECT), GEN_VAR_OBJECT_PROPERTY, InnerValue);
-                                        }
+                                        Palworld::DataTableHelper::CopyJsonValueToTableRow(static_cast<void*>(GEN_VAR_OBJECT), GEN_VAR_OBJECT_PROPERTY, InnerValue);
                                     }
                                 }
                             }
                         }
                     }
-                    else
-                    {
-                        Palworld::DataTableHelper::CopyJsonValueToTableRow(static_cast<void*>(Object), Property, Value);
-                    }
                 }
                 else
                 {
-                    PS::Log<RC::LogLevel::Warning>(STR("Property '{}' does not exist in {}\n"), PropertyName, BPMod.GetBlueprintName().ToString());
+                    Palworld::DataTableHelper::CopyJsonValueToTableRow(static_cast<void*>(Object), Property, Value);
                 }
+            }
+            else
+            {
+                PS::Log<RC::LogLevel::Warning>(STR("Property '{}' does not exist in {}\n"), PropertyName, BPMod.GetBlueprintName().ToString());
             }
         }
     }
