@@ -17,7 +17,7 @@ using namespace RC;
 using namespace RC::Unreal;
 
 namespace Palworld {
-	PalItemModLoader::PalItemModLoader() {}
+	PalItemModLoader::PalItemModLoader() : PalModLoaderBase("items") {}
 
 	PalItemModLoader::~PalItemModLoader() {}
 

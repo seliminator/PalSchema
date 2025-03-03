@@ -10,7 +10,7 @@ using namespace RC;
 using namespace RC::Unreal;
 
 namespace Palworld {
-	PalBuildingModLoader::PalBuildingModLoader() {}
+	PalBuildingModLoader::PalBuildingModLoader() : PalModLoaderBase("buildings") {}
 
 	PalBuildingModLoader::~PalBuildingModLoader() {}
 
