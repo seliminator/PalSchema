@@ -7,7 +7,7 @@
 #include "Tools/EnumSchemaDefinitionGenerator.h"
 #include "Utility/Config.h"
 #include "Utility/Logging.h"
-#include <iostream>
+#include "SDK/PalSignatures.h"
 
 using namespace RC;
 using namespace RC::Unreal;
@@ -35,12 +35,15 @@ public:
 
     auto on_program_start() -> void override
     {
-        MainLoader.PreInitialize();
     }
 
     auto on_unreal_init() -> void override
     {
         PS::PSConfig::Load();
+
+        Palworld::SignatureManager::Initialize();
+
+        MainLoader.PreInitialize();
 
         static bool HasInitialized = false;
         Unreal::Hook::RegisterProcessEventPostCallback([&](UObject* Context, UFunction* Function, void* Parms) {
