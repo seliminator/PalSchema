@@ -1,5 +1,7 @@
 #pragma once
 
+#include <vector>
+#include <functional>
 #include "Loader/PalMonsterModLoader.h"
 #include "Loader/PalHumanModLoader.h"
 #include "Loader/PalLanguageModLoader.h"
@@ -7,9 +9,12 @@
 #include "Loader/PalSkinModLoader.h"
 #include "Loader/PalAppearanceModLoader.h"
 #include "Loader/PalBuildingModLoader.h"
-#include "Loader/PalSpawnerModLoader.h"
 #include "Loader/PalRawTableLoader.h"
 #include "Loader/PalBlueprintModLoader.h"
+
+namespace UECustom {
+    class UDataTable;
+}
 
 namespace Palworld {
 	class PalMainLoader {
@@ -25,11 +30,8 @@ namespace Palworld {
 		PalSkinModLoader SkinModLoader;
 		PalAppearanceModLoader AppearanceModLoader;
 		PalBuildingModLoader BuildingModLoader;
-		PalSpawnerModLoader SpawnerModLoader;
 		PalRawTableLoader RawTableLoader;
 		PalBlueprintModLoader BlueprintModLoader;
-
-        void InitializeBlueprintModLoader();
 
 		void Load();
 
@@ -41,8 +43,6 @@ namespace Palworld {
 
 		void LoadSkinMods(const std::filesystem::path& path);
 
-		void LoadSpawnerMods(const std::filesystem::path& path);
-
 		void LoadBuildingMods(const std::filesystem::path& path);
 
 		void LoadRawTables(const std::filesystem::path& path);
@@ -50,5 +50,15 @@ namespace Palworld {
 		void LoadBlueprintMods(const std::filesystem::path& path);
 
 		void LoadAppearanceMods(const std::filesystem::path& path);
+
+        void IterateModsFolder(const std::function<void(const std::filesystem::directory_entry&)>& callback);
+
+        void ParseJsonFileInPath(const std::filesystem::path& path, const std::function<void(const nlohmann::json&)>& callback);
+    private:
+        static void HandleDataTableChanged(UECustom::UDataTable* This, RC::Unreal::FName param_1);
+
+        static inline std::vector<std::function<void(UECustom::UDataTable*)>> HandleDataTableChangedCallbacks;
+
+        static inline SafetyHookInline HandleDataTableChanged_Hook;
 	};
 }

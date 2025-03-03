@@ -1,17 +1,13 @@
 #include <fstream>
 #include <filesystem>
-#include "Unreal/AActor.hpp"
 #include "Unreal/UClass.hpp"
-#include "Unreal/UFunction.hpp"
-#include "Unreal/UScriptStruct.hpp"
-#include "Unreal/FProperty.hpp"
-#include "Unreal/Property/FEnumProperty.hpp"
 #include "Unreal/Hooks.hpp"
-#include "DynamicOutput/DynamicOutput.hpp"
 #include "Helpers/String.hpp"
 #include "Loader/PalMainLoader.h"
-#include <Utility/Config.h>
-#include <Utility/Logging.h>
+#include "Utility/Config.h"
+#include "Utility/Logging.h"
+#include "SDK/Classes/UDataTable.h"
+#include "SDK/PalSignatures.h"
 
 using namespace RC;
 using namespace RC::Unreal;
@@ -21,7 +17,27 @@ namespace fs = std::filesystem;
 namespace Palworld {
     void PalMainLoader::PreInitialize()
     {
-        InitializeBlueprintModLoader();
+        IterateModsFolder([&](const fs::directory_entry& modFolder) {
+            auto rawFolder = modFolder.path() / "raw";
+            LoadRawTables(rawFolder);
+        });
+
+        if (PS::PSConfig::IsExperimentalBlueprintSupportEnabled())
+        {
+            PS::Log<RC::LogLevel::Normal>(STR("Experimental Blueprint Support is enabled.\n"));
+            BlueprintModLoader.Initialize();
+        }
+
+        HandleDataTableChangedCallbacks.push_back([&](UECustom::UDataTable* Table) {
+            RawTableLoader.Apply(Table);
+        });
+
+        auto HandleDataTableChanged_Address = Palworld::SignatureManager::GetSignature("UDataTable::HandleDataTableChanged");
+        if (HandleDataTableChanged_Address)
+        {
+            HandleDataTableChanged_Hook = safetyhook::create_inline(reinterpret_cast<void*>(HandleDataTableChanged_Address),
+                HandleDataTableChanged);
+        }
     }
 
     void PalMainLoader::Initialize()
@@ -33,335 +49,175 @@ namespace Palworld {
 		SkinModLoader.Initialize();
 		AppearanceModLoader.Initialize();
 		BuildingModLoader.Initialize();
-		SpawnerModLoader.Initialize();
 		RawTableLoader.Initialize();
 
 		Load();
 	}
 
-    void PalMainLoader::InitializeBlueprintModLoader()
-    {
-        if (PS::PSConfig::IsExperimentalBlueprintSupportEnabled())
-        {
-            PS::Log<RC::LogLevel::Normal>(STR("Experimental Blueprint Support is enabled.\n"));
-            BlueprintModLoader.Initialize();
-
-            // For backwards compatibility with old UE4SS path
-            fs::path cwd = fs::current_path() / "Mods" / "PalSchema" / "mods";
-
-            if (!fs::exists(cwd))
-            {
-                cwd = fs::current_path() / "ue4ss" / "Mods" / "PalSchema" / "mods";
-            }
-
-            if (fs::exists(cwd))
-            {
-                for (const auto& entry : fs::directory_iterator(cwd)) {
-                    if (entry.is_directory())
-                    {
-                        auto& modsPath = entry.path();
-
-                        auto blueprintFolder = modsPath / "blueprints";
-                        if (fs::is_directory(blueprintFolder))
-                        {
-                            PS::Log<RC::LogLevel::Normal>(STR("Loading mod: {}\n"), modsPath.stem().native());
-
-                            LoadBlueprintMods(blueprintFolder);
-                        }
-                    }
-                }
-            }
-        }
-    }
-
     void PalMainLoader::Load()
 	{
-        // For backwards compatibility with old UE4SS path
-		fs::path cwd = fs::current_path() / "Mods" / "PalSchema" / "mods";
+        IterateModsFolder([&](const fs::directory_entry& modFolder) {
+            auto& modsPath = modFolder.path();
 
-		if (!fs::exists(cwd))
-		{
-			cwd = fs::current_path() / "ue4ss" / "Mods" / "PalSchema" / "mods";
-		}
+            PS::Log<RC::LogLevel::Normal>(STR("Loading mod: {}\n"), modsPath.stem().native());
 
-		if (fs::exists(cwd))
-		{
-			for (const auto& entry : fs::directory_iterator(cwd)) {
-				if (entry.is_directory())
-				{
-					auto& modsPath = entry.path();
+            auto palFolder = modsPath / "pals";
+            LoadPalMods(palFolder);
 
-					PS::Log<RC::LogLevel::Normal>(STR("Loading mod: {}\n"), modsPath.stem().native());
+            auto itemsFolder = modsPath / "items";
+            LoadItemMods(itemsFolder);
 
-					auto palFolder = modsPath / "pals";
-					if (fs::is_directory(palFolder))
-					{
-						LoadPalMods(palFolder);
-					}
+            auto skinsFolder = modsPath / "skins";
+            LoadSkinMods(skinsFolder);
 
-					auto itemsFolder = modsPath / "items";
-					if (fs::is_directory(itemsFolder))
-					{
-						LoadItemMods(itemsFolder);
-					}
+            auto appearanceFolder = modsPath / "appearance";
+            LoadAppearanceMods(appearanceFolder);
 
-					auto skinsFolder = modsPath / "skins";
-					if (fs::is_directory(skinsFolder))
-					{
-						LoadSkinMods(skinsFolder);
-					}
+            auto buildingsFolder = modsPath / "buildings";
+            LoadBuildingMods(buildingsFolder);
 
-					auto appearanceFolder = modsPath / "appearance";
-					if (fs::is_directory(appearanceFolder))
-					{
-						LoadAppearanceMods(appearanceFolder);
-					}
+            auto translationsFolder = modsPath / "translations";
+            LoadLanguageMods(translationsFolder);
 
-					auto spawnerFolder = modsPath / "spawner";
-					if (fs::is_directory(spawnerFolder))
-					{
-						LoadSpawnerMods(spawnerFolder);
-					}
-
-					auto buildingsFolder = modsPath / "buildings";
-					if (fs::is_directory(buildingsFolder))
-					{
-						LoadBuildingMods(buildingsFolder);
-					}
-
-					auto rawFolder = modsPath / "raw";
-					if (fs::is_directory(rawFolder))
-					{
-						LoadRawTables(rawFolder);
-					}
-
-					auto translationsFolder = modsPath / "translations";
-					if (fs::is_directory(translationsFolder))
-					{
-						LoadLanguageMods(translationsFolder);
-					}
-				}
-			}
-		}
+            if (PS::PSConfig::IsExperimentalBlueprintSupportEnabled())
+            {
+                auto blueprintFolder = modsPath / "blueprints";
+                LoadBlueprintMods(blueprintFolder);
+            }
+        });
 	}
 
 	void PalMainLoader::LoadLanguageMods(const std::filesystem::path& path)
 	{
 		const auto& currentLanguage = LanguageModLoader.GetCurrentLanguage();
-		auto translationLanguageFolder = path / currentLanguage;
+
+        auto globalLanguageFolder = path / "global";
+        if (fs::exists(globalLanguageFolder))
+        {
+            ParseJsonFileInPath(globalLanguageFolder, [&](nlohmann::json data) {
+                LanguageModLoader.Load(data);
+            });
+        }
+
+        auto translationLanguageFolder = path / currentLanguage;
 		if (fs::exists(translationLanguageFolder))
 		{
-			for (const auto& translationFile : fs::directory_iterator(translationLanguageFolder)) {
-				try
-				{
-					auto translationFilePath = translationFile.path();
-					if (translationFilePath.has_extension())
-					{
-						if (translationFilePath.extension() == ".json")
-						{
-							std::ifstream f(translationFilePath);
-							nlohmann::json data = nlohmann::json::parse(f);
-							LanguageModLoader.Load(data);
-						}
-					}
-				}
-				catch (const std::exception& e)
-				{
-					PS::Log<RC::LogLevel::Error>(STR("Failed parsing language file {} - {}.\n"), RC::to_generic_string(translationFile.path().native()), RC::to_generic_string(e.what()));
-				}
-			}
+            ParseJsonFileInPath(translationLanguageFolder, [&](nlohmann::json data) {
+                LanguageModLoader.Load(data);
+            });
 		}
 	}
 
 	void PalMainLoader::LoadPalMods(const std::filesystem::path& path)
 	{
-		for (const auto& palFile : fs::directory_iterator(path)) {
-			try
-			{
-				auto palFilePath = palFile.path();
-				if (palFilePath.has_extension())
-				{
-					if (palFilePath.extension() == ".json")
-					{
-						std::ifstream f(palFilePath);
-						nlohmann::json data = nlohmann::json::parse(f);
-						MonsterModLoader.Load(data);
-						PS::Log<RC::LogLevel::Normal>(STR("Pal Mod '{}' loaded.\n"), palFilePath.filename().native());
-					}
-				}
-			}
-			catch (const std::exception& e)
-			{
-				PS::Log<RC::LogLevel::Error>(STR("Failed parsing pal file {} - {}.\n"), RC::to_generic_string(palFile.path().native()), RC::to_generic_string(e.what()));
-			}
-		}
+        ParseJsonFileInPath(path, [&](nlohmann::json data) {
+            MonsterModLoader.Load(data);
+        });
 	}
 
 	void PalMainLoader::LoadItemMods(const std::filesystem::path& path)
 	{
-		for (const auto& palFile : fs::directory_iterator(path)) {
-			try
-			{
-				auto palFilePath = palFile.path();
-				if (palFilePath.has_extension())
-				{
-					if (palFilePath.extension() == ".json")
-					{
-						std::ifstream f(palFilePath);
-						nlohmann::json data = nlohmann::json::parse(f);
-						ItemModLoader.Load(data);
-						PS::Log<RC::LogLevel::Normal>(STR("Item Mod '{}' loaded.\n"), palFilePath.filename().native());
-					}
-				}
-			}
-			catch (const std::exception& e)
-			{
-				PS::Log<RC::LogLevel::Error>(STR("Failed parsing item file {} - {}.\n"), RC::to_generic_string(palFile.path().native()), RC::to_generic_string(e.what()));
-			}
-		}
+        ParseJsonFileInPath(path, [&](nlohmann::json data) {
+            ItemModLoader.Load(data);
+        });
 	}
 
 	void PalMainLoader::LoadSkinMods(const std::filesystem::path& path)
 	{
-		for (const auto& palFile : fs::directory_iterator(path)) {
-			try
-			{
-				auto palFilePath = palFile.path();
-				if (palFilePath.has_extension())
-				{
-					if (palFilePath.extension() == ".json")
-					{
-						std::ifstream f(palFilePath);
-						nlohmann::json data = nlohmann::json::parse(f);
-						SkinModLoader.Load(data);
-						PS::Log<RC::LogLevel::Normal>(STR("Skin Mod '{}' loaded.\n"), palFilePath.filename().native());
-					}
-				}
-			}
-			catch (const std::exception& e)
-			{
-				PS::Log<RC::LogLevel::Error>(STR("Failed parsing skin file {} - {}.\n"), RC::to_generic_string(palFile.path().native()), RC::to_generic_string(e.what()));
-			}
-		}
-	}
-
-	void PalMainLoader::LoadSpawnerMods(const std::filesystem::path& path)
-	{
-		for (const auto& file : fs::directory_iterator(path)) {
-			try
-			{
-				auto filePath = file.path();
-				if (filePath.has_extension())
-				{
-					if (filePath.extension() == ".json")
-					{
-						std::ifstream f(filePath);
-						nlohmann::json data = nlohmann::json::parse(f);
-						SpawnerModLoader.Load(data);
-						PS::Log<RC::LogLevel::Normal>(STR("Spawner Mod '{}' loaded.\n"), filePath.filename().native());
-					}
-				}
-			}
-			catch (const std::exception& e)
-			{
-				PS::Log<RC::LogLevel::Error>(STR("Failed parsing spawner file {} - {}.\n"), RC::to_generic_string(file.path().native()), RC::to_generic_string(e.what()));
-			}
-		}
+        ParseJsonFileInPath(path, [&](nlohmann::json data) {
+            SkinModLoader.Load(data);
+        });
 	}
 
 	void PalMainLoader::LoadBuildingMods(const std::filesystem::path& path)
 	{
-		for (const auto& file : fs::directory_iterator(path)) {
-			try
-			{
-				auto filePath = file.path();
-				if (filePath.has_extension())
-				{
-					if (filePath.extension() == ".json")
-					{
-						std::ifstream f(filePath);
-						nlohmann::json data = nlohmann::json::parse(f);
-						BuildingModLoader.Load(data);
-						PS::Log<RC::LogLevel::Normal>(STR("Building Mod '{}' loaded.\n"), filePath.filename().native());
-					}
-				}
-			}
-			catch (const std::exception& e)
-			{
-				PS::Log<RC::LogLevel::Error>(STR("Failed parsing building file {} - {}.\n"), RC::to_generic_string(file.path().native()), RC::to_generic_string(e.what()));
-			}
-		}
+        ParseJsonFileInPath(path, [&](nlohmann::json data) {
+            BuildingModLoader.Load(data);
+        });
 	}
 
 	void PalMainLoader::LoadAppearanceMods(const std::filesystem::path& path)
 	{
-		for (const auto& palFile : fs::directory_iterator(path)) {
-			try
-			{
-				auto palFilePath = palFile.path();
-				if (palFilePath.has_extension())
-				{
-					if (palFilePath.extension() == ".json")
-					{
-						std::ifstream f(palFilePath);
-						nlohmann::json data = nlohmann::json::parse(f);
-						AppearanceModLoader.Load(data);
-						PS::Log<RC::LogLevel::Normal>(STR("Appearance Mod '{}' loaded.\n"), palFilePath.filename().native());
-					}
-				}
-			}
-			catch (const std::exception& e)
-			{
-				PS::Log<RC::LogLevel::Error>(STR("Failed parsing appearance file {} - {}.\n"), RC::to_generic_string(palFile.path().native()), RC::to_generic_string(e.what()));
-			}
-		}
+        ParseJsonFileInPath(path, [&](nlohmann::json data) {
+            AppearanceModLoader.Load(data);
+        });
 	}
 
-	void PalMainLoader::LoadRawTables(const std::filesystem::path& path)
-	{
-		for (const auto& rawFile : fs::directory_iterator(path)) {
-			try
-			{
-				auto rawFilePath = rawFile.path();
-				if (rawFilePath.has_extension())
-				{
-					if (rawFilePath.extension() == ".json")
-					{
-						std::ifstream f(rawFilePath);
-						nlohmann::json data = nlohmann::json::parse(f);
-						RawTableLoader.Load(data);
-						PS::Log<RC::LogLevel::Normal>(STR("Raw Tables in '{}' loaded.\n"), rawFilePath.filename().native());
-					}
-				}
-			}
-			catch (const std::exception& e)
-			{
-				PS::Log<RC::LogLevel::Error>(STR("Failed parsing raw table file {} - {}.\n"), RC::to_generic_string(rawFile.path().native()), RC::to_generic_string(e.what()));
-			}
-		}
-	}
+    void PalMainLoader::LoadRawTables(const std::filesystem::path& path)
+    {
+        ParseJsonFileInPath(path, [&](nlohmann::json data) {
+            RawTableLoader.Load(data);
+        });
+    }
 
     void PalMainLoader::LoadBlueprintMods(const std::filesystem::path& path)
     {
-        for (const auto& blueprintFile : fs::directory_iterator(path)) {
+        ParseJsonFileInPath(path, [&](nlohmann::json data) {
+            BlueprintModLoader.Load(data);
+        });
+    }
+
+    void PalMainLoader::IterateModsFolder(const std::function<void(const std::filesystem::directory_entry&)>& callback)
+    {
+        // For backwards compatibility with old UE4SS path
+        fs::path cwd = fs::current_path() / "Mods" / "PalSchema" / "mods";
+
+        if (!fs::exists(cwd))
+        {
+            cwd = fs::current_path() / "ue4ss" / "Mods" / "PalSchema" / "mods";
+        }
+
+        if (fs::exists(cwd))
+        {
+            for (const auto& entry : fs::directory_iterator(cwd)) {
+                if (entry.is_directory())
+                {
+                    callback(entry);
+                }
+            }
+        }
+    }
+
+    void PalMainLoader::ParseJsonFileInPath(const std::filesystem::path& path, const std::function<void(const nlohmann::json&)>& callback)
+    {
+        if (!fs::is_directory(path))
+        {
+            return;
+        }
+
+        for (const auto& file : fs::directory_iterator(path)) {
             try
             {
-                auto blueprintFilePath = blueprintFile.path();
-                if (blueprintFilePath.has_extension())
+                auto filePath = file.path();
+                if (filePath.has_extension())
                 {
-                    if (blueprintFilePath.extension() == ".json")
+                    if (filePath.extension() == ".json" || filePath.extension() == ".jsonc")
                     {
-                        std::ifstream f(blueprintFilePath);
-                        nlohmann::json data = nlohmann::json::parse(f);
-                        BlueprintModLoader.Load(data);
-                        PS::Log<RC::LogLevel::Normal>(STR("Blueprint mods in '{}' loaded.\n"), blueprintFilePath.filename().native());
+                        auto ignoreComments = filePath.extension() == ".jsonc";
+                        std::ifstream f(filePath);
+                        nlohmann::json data = nlohmann::json::parse(f, nullptr, true, ignoreComments);
+                        callback(data);
+                        PS::Log<RC::LogLevel::Normal>(STR("Mod '{}' loaded.\n"), filePath.filename().native());
                     }
                 }
             }
             catch (const std::exception& e)
             {
-                PS::Log<RC::LogLevel::Error>(STR("Failed parsing blueprint mod {} - {}.\n"), RC::to_generic_string(blueprintFile.path().native()), RC::to_generic_string(e.what()));
+                PS::Log<RC::LogLevel::Error>(STR("Failed parsing mod file {} - {}.\n"), RC::to_generic_string(file.path().native()), RC::to_generic_string(e.what()));
             }
+        }
+    }
+
+    void PalMainLoader::HandleDataTableChanged(UECustom::UDataTable* This, RC::Unreal::FName param_1)
+    {
+        HandleDataTableChanged_Hook.call(This, param_1);
+
+        static auto CompositeDataTableClass = UObjectGlobals::StaticFindObject<UClass*>(nullptr, nullptr, STR("/Script/Engine.CompositeDataTable"));
+        if (This->GetClassPrivate() == CompositeDataTableClass) return;
+
+        for (auto& Callback : HandleDataTableChangedCallbacks)
+        {
+            Callback(This);
         }
     }
 }
