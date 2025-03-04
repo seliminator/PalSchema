@@ -22,3 +22,11 @@ I'll only include one mod per author to avoid cluttering the list too much.
 [Additional Skins for PalSchema](https://www.nexusmods.com/palworld/mods/2199) by William112792
 
 [Faster Yakumo for PalSchema](https://www.nexusmods.com/palworld/mods/2207) by MelwenMods
+
+[Schematic Item Icons](https://www.nexusmods.com/palworld/mods/2192) by Primarinabee
+
+[Male Probability 50 for All Pals](https://www.nexusmods.com/palworld/mods/2285) by ZeroRin00
+
+[All legendary head pieces match hexolite head gear](https://www.nexusmods.com/palworld/mods/2295) by Helionhell
+
+[Expensive Palboxes](https://www.nexusmods.com/palworld/mods/708) by marksmango
