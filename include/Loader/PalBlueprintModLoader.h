@@ -18,11 +18,13 @@ namespace Palworld {
 
         void Initialize();
     private:
-        static inline std::unordered_map<RC::Unreal::FName, PalBlueprintMod> BPModRegistry;
+        static inline std::unordered_map<RC::Unreal::FName, std::vector<PalBlueprintMod>> BPModRegistry;
 
-        static PalBlueprintMod& GetMod(const RC::Unreal::FName& Name);
+        static std::vector<PalBlueprintMod>& GetModsForBlueprint(const RC::Unreal::FName& Name);
         
         static void ApplyMod(const PalBlueprintMod& BPMod, RC::Unreal::UObject* Object);
+
+        static void ApplyMod(const nlohmann::json& Data, RC::Unreal::UObject* Object);
     private:
         static void PostLoadDefaultObject(RC::Unreal::UClass* This, RC::Unreal::UObject* DefaultObject);
 
